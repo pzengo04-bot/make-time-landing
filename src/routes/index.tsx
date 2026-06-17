@@ -85,6 +85,7 @@ function WaitlistForm({
   }
 
   return (
+    <>
     <form
       onSubmit={onSubmit}
       className="flex w-full flex-col gap-3 sm:flex-row"
