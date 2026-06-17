@@ -46,11 +46,31 @@ function WaitlistForm({
 }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    setSubmitted(true);
+    if (!email || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/public/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data?.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputPad = size === "lg" ? "px-6 py-5 text-base" : "px-5 py-4 text-sm";
@@ -59,12 +79,13 @@ function WaitlistForm({
   if (submitted) {
     return (
       <div className="w-full rounded-2xl border border-border bg-card/60 px-6 py-5 text-center text-sm text-foreground backdrop-blur">
-        You're on the list. Watch your inbox.
+        You're in. We'll keep you updated on Roo Athletics.
       </div>
     );
   }
 
   return (
+    <>
     <form
       onSubmit={onSubmit}
       className="flex w-full flex-col gap-3 sm:flex-row"
@@ -79,11 +100,16 @@ function WaitlistForm({
       />
       <button
         type="submit"
-        className={`btn-premium shrink-0 rounded-xl bg-primary ${btnPad} font-semibold uppercase tracking-[0.18em] text-primary-foreground`}
+        disabled={loading}
+        className={`btn-premium shrink-0 rounded-xl bg-primary ${btnPad} font-semibold uppercase tracking-[0.18em] text-primary-foreground disabled:opacity-60`}
       >
-        {variant === "hero" ? "Join the Waitlist" : "Join Now"}
+        {loading ? "Joining…" : variant === "hero" ? "Join the Waitlist" : "Join Now"}
       </button>
     </form>
+    {error ? (
+      <p className="mt-3 text-xs text-red-400" role="alert">{error}</p>
+    ) : null}
+    </>
   );
 }
 
