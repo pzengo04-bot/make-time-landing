@@ -81,10 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Premium athletic essentials built for the ones who show up — even when life gets busy. Join the Roo Athletics waitlist." },
       { name: "author", content: "Roo Athletics" },
       { property: "og:title", content: "Roo Athletics — Make Time." },
-      { property: "og:description", content: "Premium athletic essentials built for the ones who show up — even when life gets busy." },
+      { property: "og:description", content: "Premium athletic essentials built for the ones who show up — even when life gets busy. Join the Roo Athletics waitlist." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@RooAthletics" },
+      { name: "twitter:title", content: "Roo Athletics — Make Time." },
+      { name: "twitter:description", content: "Premium athletic essentials built for the ones who show up — even when life gets busy. Join the Roo Athletics waitlist." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/693528cf-6ab8-44fc-8618-74b9b7afffdd/id-preview-97d9b322--3afd10a7-eb8c-49df-8b2c-6a5145130896.lovable.app-1781718418445.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/693528cf-6ab8-44fc-8618-74b9b7afffdd/id-preview-97d9b322--3afd10a7-eb8c-49df-8b2c-6a5145130896.lovable.app-1781718418445.png" },
     ],
     links: [
       {
