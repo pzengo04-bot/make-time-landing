@@ -182,3 +182,142 @@
 @utility shadow-elegant {
   box-shadow: var(--shadow-elegant);
 }
+
+/* ===== Premium motion ===== */
+
+@keyframes roo-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes roo-shimmer {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+  }
+}
+
+@keyframes roo-shine {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes roo-float {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(6px); opacity: 1; }
+}
+
+@utility reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(6px);
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+              filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform, filter;
+}
+
+@utility reveal-in {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Subtle diagonal shimmer that sweeps across a card on hover */
+@utility card-shimmer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      oklch(1 0 0 / 0.08) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%) skewX(-12deg);
+    transition: transform 0s;
+  }
+
+  &:hover::before {
+    animation: roo-shimmer 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Refined CTA: subtle gradient sheen on hover, no garish glow */
+@utility btn-premium {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 400ms ease,
+              background-color 300ms ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 35%,
+      oklch(0 0 0 / 0.18) 50%,
+      transparent 65%
+    );
+    background-size: 200% 100%;
+    background-position: -100% 0;
+    transition: background-position 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 40px -14px oklch(1 0 0 / 0.25);
+  }
+
+  &:hover::after {
+    background-position: 200% 0;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@utility float-soft {
+  animation: roo-float 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .card-shimmer::before,
+  .btn-premium::after,
+  .float-soft {
+    animation: none !important;
+    transition: none !important;
+  }
+}
