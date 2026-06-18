@@ -21,18 +21,18 @@ export const Route = createFileRoute("/")({
 
 const products = [
   {
-    name: "Fitted Tee",
-    desc: "Athletic taper. Fitted sleeves. Everyday comfort.",
+    name: "Fitted Tee — Front",
+    desc: "Athletic fit. Premium comfort. Built for training and everyday wear.",
     img: productFitted,
   },
   {
-    name: "Performance Tee",
-    desc: "Lightweight. Breathable. Built for training.",
+    name: "Fitted Tee — Back",
+    desc: "ROO wordmark centered below the collar. Tapered silhouette, curved hem.",
     img: productPerformance,
   },
   {
-    name: "Oversized Tee",
-    desc: "Relaxed fit. Premium weight. Everyday wear.",
+    name: "Fitted Tee — Detail",
+    desc: "95% cotton, 5% spandex. Premium performance blend. Soft touch, durability focused.",
     img: productOversized,
   },
 ];
