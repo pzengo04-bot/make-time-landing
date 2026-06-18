@@ -57,7 +57,7 @@ export const Route = createFileRoute("/api/public/waitlist")({
               customer: {
                 email,
                 email_marketing_consent: marketingConsent,
-                tags: "waitlist, roo-launch",
+                tags: "Roo Waitlist",
               },
             }),
           });
@@ -91,7 +91,7 @@ export const Route = createFileRoute("/api/public/waitlist")({
                 customer: {
                   id: existing.id,
                   email_marketing_consent: marketingConsent,
-                  tags: [existing.tags, "waitlist", "roo-launch"]
+                  tags: [existing.tags, "Roo Waitlist"]
                     .filter(Boolean)
                     .join(", "),
                 },
