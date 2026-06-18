@@ -215,7 +215,7 @@ function Index() {
               className="reveal reveal-in mt-8"
               style={{ transitionDelay: "480ms" }}
             >
-              <SocialProof count={127} />
+              <SocialProof count={93} />
             </div>
           </div>
 
