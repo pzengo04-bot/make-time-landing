@@ -49,8 +49,36 @@ export const Route = createFileRoute("/api/public/waitlist")({
           consent_updated_at: consentTs,
         };
 
+        // 0. Persist the signup to the database first — this is the source of truth.
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
+        const userAgent = request.headers.get("user-agent") ?? null;
+        const ipAddress =
+          request.headers.get("cf-connecting-ip") ??
+          request.headers.get("x-forwarded-for") ??
+          null;
+
+        const { error: dbError } = await supabaseAdmin
+          .from("waitlist_signups")
+          .upsert(
+            {
+              email,
+              source: "website",
+              user_agent: userAgent,
+              ip_address: ipAddress,
+              marketing_consent_at: consentTs,
+            },
+            { onConflict: "email", ignoreDuplicates: false },
+          );
+
+        if (dbError) {
+          console.error("Waitlist DB insert failed", dbError);
+          return json({ error: "Couldn't sign you up. Please try again." }, 500);
+        }
+
+        // 1. Best-effort Shopify sync. Failures are logged but do not break signup.
         try {
-          // 1. Try to create the customer with marketing consent.
           const createRes = await shopifyAdmin("/customers.json", {
             method: "POST",
             body: JSON.stringify({
@@ -63,6 +91,15 @@ export const Route = createFileRoute("/api/public/waitlist")({
           });
 
           if (createRes.ok) {
+            const created = await createRes.json().catch(() => ({}));
+            await supabaseAdmin
+              .from("waitlist_signups")
+              .update({
+                shopify_synced_at: new Date().toISOString(),
+                shopify_customer_id: String(created?.customer?.id ?? ""),
+                shopify_sync_error: null,
+              })
+              .eq("email", email);
             return json({ ok: true, status: "created" });
           }
 
@@ -73,8 +110,19 @@ export const Route = createFileRoute("/api/public/waitlist")({
           );
 
           if (!alreadyExists) {
-            console.error("Shopify customer create failed", createRes.status, createBody);
-            return json({ error: "Couldn't sign you up. Please try again." }, 502);
+            console.error(
+              "Shopify customer create failed",
+              createRes.status,
+              createBody,
+            );
+            await supabaseAdmin
+              .from("waitlist_signups")
+              .update({
+                shopify_sync_error: `${createRes.status}: ${JSON.stringify(createBody?.errors ?? createBody)}`.slice(0, 1000),
+              })
+              .eq("email", email);
+            // Signup still succeeds — email is stored in the database.
+            return json({ ok: true, status: "stored" });
           }
 
           // 2. Customer exists — find them and update marketing consent.
@@ -100,13 +148,23 @@ export const Route = createFileRoute("/api/public/waitlist")({
             if (!updateRes.ok) {
               const updateBody = await updateRes.text();
               console.error("Shopify customer update failed", updateRes.status, updateBody);
+            } else {
+              await supabaseAdmin
+                .from("waitlist_signups")
+                .update({
+                  shopify_synced_at: new Date().toISOString(),
+                  shopify_customer_id: String(existing.id),
+                  shopify_sync_error: null,
+                })
+                .eq("email", email);
             }
           }
 
           return json({ ok: true, status: "already_subscribed" });
         } catch (err) {
           console.error("Waitlist handler error", err);
-          return json({ error: "Unexpected error. Please try again." }, 500);
+          // DB insert succeeded — treat as success even if Shopify call threw.
+          return json({ ok: true, status: "stored" });
         }
       },
     },
