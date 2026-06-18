@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      waitlist_signups: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_address: string | null
+          marketing_consent_at: string
+          shopify_customer_id: string | null
+          shopify_sync_error: string | null
+          shopify_synced_at: string | null
+          source: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: string | null
+          marketing_consent_at?: string
+          shopify_customer_id?: string | null
+          shopify_sync_error?: string | null
+          shopify_synced_at?: string | null
+          source?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string | null
+          marketing_consent_at?: string
+          shopify_customer_id?: string | null
+          shopify_sync_error?: string | null
+          shopify_synced_at?: string | null
+          source?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
