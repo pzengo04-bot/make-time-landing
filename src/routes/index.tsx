@@ -368,7 +368,7 @@ function Index() {
           </span>
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
             <a
-              href="https://instagram.com/rooathletics"
+              href="https://instagram.com/roo.athletics"
               target="_blank"
               rel="noreferrer"
               className="transition-colors hover:text-foreground"
