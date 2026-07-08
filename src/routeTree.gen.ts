@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ApiPublicWaitlistRouteImport } from './routes/api/public/waitlist'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopIndexRoute = ShopIndexRouteImport.update({
+  id: '/shop/',
+  path: '/shop/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicWaitlistRoute = ApiPublicWaitlistRouteImport.update({
@@ -25,27 +31,31 @@ const ApiPublicWaitlistRoute = ApiPublicWaitlistRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/shop/': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/shop': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/shop/': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/waitlist'
+  fullPaths: '/' | '/shop/' | '/api/public/waitlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/waitlist'
-  id: '__root__' | '/' | '/api/public/waitlist'
+  to: '/' | '/shop' | '/api/public/waitlist'
+  id: '__root__' | '/' | '/shop/' | '/api/public/waitlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ShopIndexRoute: typeof ShopIndexRoute
   ApiPublicWaitlistRoute: typeof ApiPublicWaitlistRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop/': {
+      id: '/shop/'
+      path: '/shop'
+      fullPath: '/shop/'
+      preLoaderRoute: typeof ShopIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/waitlist': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ShopIndexRoute: ShopIndexRoute,
   ApiPublicWaitlistRoute: ApiPublicWaitlistRoute,
 }
 export const routeTree = rootRouteImport
