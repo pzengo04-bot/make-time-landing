@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useCart, cartItemCount } from "@/lib/cart-store";
-import { getProductById, formatPrice } from "@/lib/catalog";
+import { getProductById, formatPrice, getColor } from "@/lib/catalog";
 
 export function CartDrawer() {
   const items = useCart((s) => s.items);
@@ -88,11 +88,12 @@ export function CartDrawer() {
               {visibleItems.map((item) => {
                 const p = getProductById(item.productId);
                 if (!p) return null;
+                const color = getColor(p, item.color);
                 return (
-                  <li key={`${item.productId}-${item.size}`} className="flex gap-4">
+                  <li key={`${item.productId}-${item.color}-${item.size}`} className="flex gap-4">
                     <div className="h-24 w-20 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
                       <img
-                        src={p.images[0]}
+                        src={color.image}
                         alt={p.name}
                         className="h-full w-full object-cover"
                       />
@@ -104,7 +105,7 @@ export function CartDrawer() {
                             {p.name.toUpperCase()}
                           </h3>
                           <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                            {p.color} · Size {item.size}
+                            {color.name} · Size {item.size}
                           </p>
                         </div>
                         <p className="text-sm font-medium text-foreground">
@@ -115,21 +116,21 @@ export function CartDrawer() {
                         <div className="inline-flex items-center rounded-full border border-border">
                           <button
                             type="button"
-                            onClick={() => updateQty(item.productId, item.size, item.qty - 1)}
+                            onClick={() => updateQty(item.productId, item.size, item.color, item.qty - 1)}
                             aria-label="Decrease quantity"
                             className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground"
                           >−</button>
                           <span className="min-w-6 text-center text-xs font-semibold text-foreground">{item.qty}</span>
                           <button
                             type="button"
-                            onClick={() => updateQty(item.productId, item.size, item.qty + 1)}
+                            onClick={() => updateQty(item.productId, item.size, item.color, item.qty + 1)}
                             aria-label="Increase quantity"
                             className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground"
                           >+</button>
                         </div>
                         <button
                           type="button"
-                          onClick={() => removeItem(item.productId, item.size)}
+                          onClick={() => removeItem(item.productId, item.size, item.color)}
                           className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
                         >
                           Remove

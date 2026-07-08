@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { useCart, cartItemCount } from "@/lib/cart-store";
-import { getProductById, formatPrice } from "@/lib/catalog";
+import { getProductById, formatPrice, getColor } from "@/lib/catalog";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -65,10 +65,11 @@ function CartPage() {
               {visible.map((item) => {
                 const p = getProductById(item.productId);
                 if (!p) return null;
+                const color = getColor(p, item.color);
                 return (
-                  <li key={`${item.productId}-${item.size}`} className="flex gap-5 py-6">
+                  <li key={`${item.productId}-${item.color}-${item.size}`} className="flex gap-5 py-6">
                     <div className="h-32 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
-                      <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover" />
+                      <img src={color.image} alt={p.name} className="h-full w-full object-cover" />
                     </div>
                     <div className="flex flex-1 flex-col">
                       <div className="flex items-start justify-between gap-3">
@@ -77,20 +78,20 @@ function CartPage() {
                             {p.name.toUpperCase()}
                           </h2>
                           <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                            {p.color} · Size {item.size}
+                            {color.name} · Size {item.size}
                           </p>
                         </div>
                         <p className="text-sm font-medium text-foreground">{formatPrice(p)}</p>
                       </div>
                       <div className="mt-auto flex items-center justify-between pt-4">
                         <div className="inline-flex items-center rounded-full border border-border">
-                          <button type="button" aria-label="Decrease" onClick={() => updateQty(item.productId, item.size, item.qty - 1)} className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground">−</button>
+                          <button type="button" aria-label="Decrease" onClick={() => updateQty(item.productId, item.size, item.color, item.qty - 1)} className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground">−</button>
                           <span className="min-w-6 text-center text-xs font-semibold text-foreground">{item.qty}</span>
-                          <button type="button" aria-label="Increase" onClick={() => updateQty(item.productId, item.size, item.qty + 1)} className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground">+</button>
+                          <button type="button" aria-label="Increase" onClick={() => updateQty(item.productId, item.size, item.color, item.qty + 1)} className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground">+</button>
                         </div>
                         <button
                           type="button"
-                          onClick={() => removeItem(item.productId, item.size)}
+                          onClick={() => removeItem(item.productId, item.size, item.color)}
                           className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
                         >
                           Remove

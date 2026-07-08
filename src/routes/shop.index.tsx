@@ -54,7 +54,7 @@ function ShopIndex() {
             >
               <div className="relative aspect-[4/5] overflow-hidden bg-muted">
                 <img
-                  src={p.images[0]}
+                  src={p.colors[0].image}
                   alt={p.name}
                   className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.06]"
                 />
@@ -68,7 +68,7 @@ function ShopIndex() {
                     {p.name.toUpperCase()}
                   </h2>
                   <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                    {p.color}
+                    {p.colors.length} {p.colors.length === 1 ? "color" : "colors"}
                   </p>
                 </div>
                 <span className="text-sm font-medium text-foreground">

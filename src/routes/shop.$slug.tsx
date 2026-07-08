@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
-import { getProductBySlug, formatPrice, type ProductSize } from "@/lib/catalog";
+import { getProductBySlug, formatPrice, type ProductSize, type ProductColor } from "@/lib/catalog";
 import { useCart } from "@/lib/cart-store";
 
 export const Route = createFileRoute("/shop/$slug")({
@@ -29,8 +29,8 @@ export const Route = createFileRoute("/shop/$slug")({
         { name: "description", content: product.tagline },
         { property: "og:title", content: title },
         { property: "og:description", content: product.tagline },
-        { property: "og:image", content: product.images[0] },
-        { name: "twitter:image", content: product.images[0] },
+        { property: "og:image", content: product.colors[0].image },
+        { name: "twitter:image", content: product.colors[0].image },
       ],
     };
   },
@@ -91,10 +91,13 @@ function ProductDetail() {
   const { product } = Route.useLoaderData();
   const addItem = useCart((s) => s.addItem);
   const [size, setSize] = useState<ProductSize | null>(null);
-  const [activeImage, setActiveImage] = useState(0);
+  const [colorName, setColorName] = useState<string>(product.colors[0].name);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => { useCart.persist.rehydrate(); }, []);
+
+  const activeColor =
+    product.colors.find((c: ProductColor) => c.name === colorName) ?? product.colors[0];
 
   const onAdd = () => {
     if (!size) {
@@ -102,7 +105,7 @@ function ProductDetail() {
       return;
     }
     setError(null);
-    addItem(product.id, size, 1);
+    addItem(product.id, size, activeColor.name, 1);
   };
 
   return (
@@ -122,24 +125,24 @@ function ProductDetail() {
           <div>
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-border bg-muted">
               <img
-                src={product.images[activeImage]}
-                alt={`${product.name} view ${activeImage + 1}`}
+                src={activeColor.image}
+                alt={`${product.name} in ${activeColor.name}`}
                 className="h-full w-full object-cover"
               />
             </div>
-            {product.images.length > 1 ? (
+            {product.colors.length > 1 ? (
               <div className="mt-4 grid grid-cols-4 gap-3">
-                {product.images.map((src: string, i: number) => (
+                {product.colors.map((c: ProductColor) => (
                   <button
-                    key={i}
+                    key={c.name}
                     type="button"
-                    onClick={() => setActiveImage(i)}
-                    aria-label={`View image ${i + 1}`}
+                    onClick={() => setColorName(c.name)}
+                    aria-label={`View ${c.name}`}
                     className={`aspect-square overflow-hidden rounded-lg border transition-colors ${
-                      activeImage === i ? "border-foreground" : "border-border hover:border-foreground/40"
+                      colorName === c.name ? "border-foreground" : "border-border hover:border-foreground/40"
                     }`}
                   >
-                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <img src={c.image} alt="" className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -149,7 +152,7 @@ function ProductDetail() {
           {/* Info */}
           <div className="lg:sticky lg:top-32 lg:self-start">
             <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-muted-foreground">
-              {product.color}
+              {activeColor.name}
             </p>
             <h1 className="mt-3 font-display text-5xl leading-none tracking-tight text-foreground sm:text-6xl">
               {product.name.toUpperCase()}
@@ -160,6 +163,30 @@ function ProductDetail() {
             <p className="mt-6 text-base leading-relaxed text-muted-foreground">
               {product.description}
             </p>
+
+            {/* Color */}
+            <div className="mt-10">
+              <p className="mb-3 text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+                Color · <span className="text-foreground">{activeColor.name}</span>
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {product.colors.map((c: ProductColor) => (
+                  <button
+                    key={c.name}
+                    type="button"
+                    onClick={() => setColorName(c.name)}
+                    aria-label={c.name}
+                    aria-pressed={colorName === c.name}
+                    className={`h-9 w-9 rounded-full border-2 transition-all ${
+                      colorName === c.name
+                        ? "border-foreground scale-110"
+                        : "border-border hover:border-foreground/40"
+                    }`}
+                    style={{ backgroundColor: c.hex }}
+                  />
+                ))}
+              </div>
+            </div>
 
             {/* Size */}
             <div className="mt-10">

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useCart, cartItemCount } from "@/lib/cart-store";
-import { getProductById, formatPrice } from "@/lib/catalog";
+import { getProductById, formatPrice, getColor } from "@/lib/catalog";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -176,10 +176,11 @@ function CheckoutPage() {
               {visible.map((item) => {
                 const p = getProductById(item.productId);
                 if (!p) return null;
+                const color = getColor(p, item.color);
                 return (
-                  <li key={`${item.productId}-${item.size}`} className="flex gap-3">
+                  <li key={`${item.productId}-${item.color}-${item.size}`} className="flex gap-3">
                     <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
-                      <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover" />
+                      <img src={color.image} alt={p.name} className="h-full w-full object-cover" />
                       <span className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background">
                         {item.qty}
                       </span>
@@ -188,7 +189,7 @@ function CheckoutPage() {
                       <div>
                         <p className="text-sm font-medium text-foreground">{p.name}</p>
                         <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                          {p.color} · {item.size}
+                          {color.name} · {item.size}
                         </p>
                       </div>
                       <p className="text-xs font-medium text-foreground">{formatPrice(p)}</p>

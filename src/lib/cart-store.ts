@@ -5,15 +5,16 @@ import type { ProductSize } from "./catalog";
 export type CartItem = {
   productId: string;
   size: ProductSize;
+  color: string;
   qty: number;
 };
 
 type CartState = {
   items: CartItem[];
   drawerOpen: boolean;
-  addItem: (productId: string, size: ProductSize, qty?: number) => void;
-  removeItem: (productId: string, size: ProductSize) => void;
-  updateQty: (productId: string, size: ProductSize, qty: number) => void;
+  addItem: (productId: string, size: ProductSize, color: string, qty?: number) => void;
+  removeItem: (productId: string, size: ProductSize, color: string) => void;
+  updateQty: (productId: string, size: ProductSize, color: string, qty: number) => void;
   clear: () => void;
   openDrawer: () => void;
   closeDrawer: () => void;
@@ -24,15 +25,15 @@ export const useCart = create<CartState>()(
     (set) => ({
       items: [],
       drawerOpen: false,
-      addItem: (productId, size, qty = 1) =>
+      addItem: (productId, size, color, qty = 1) =>
         set((state) => {
           const existing = state.items.find(
-            (i) => i.productId === productId && i.size === size,
+            (i) => i.productId === productId && i.size === size && i.color === color,
           );
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.productId === productId && i.size === size
+                i.productId === productId && i.size === size && i.color === color
                   ? { ...i, qty: i.qty + qty }
                   : i,
               ),
@@ -40,21 +41,21 @@ export const useCart = create<CartState>()(
             };
           }
           return {
-            items: [...state.items, { productId, size, qty }],
+            items: [...state.items, { productId, size, color, qty }],
             drawerOpen: true,
           };
         }),
-      removeItem: (productId, size) =>
+      removeItem: (productId, size, color) =>
         set((state) => ({
           items: state.items.filter(
-            (i) => !(i.productId === productId && i.size === size),
+            (i) => !(i.productId === productId && i.size === size && i.color === color),
           ),
         })),
-      updateQty: (productId, size, qty) =>
+      updateQty: (productId, size, color, qty) =>
         set((state) => ({
           items: state.items
             .map((i) =>
-              i.productId === productId && i.size === size
+              i.productId === productId && i.size === size && i.color === color
                 ? { ...i, qty: Math.max(0, qty) }
                 : i,
             )
