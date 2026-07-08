@@ -14,6 +14,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
+import { Route as CheckoutConfirmedRouteImport } from './routes/checkout.confirmed'
 import { Route as ApiPublicWaitlistRouteImport } from './routes/api/public/waitlist'
 
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -41,6 +42,11 @@ const ShopSlugRoute = ShopSlugRouteImport.update({
   path: '/shop/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutConfirmedRoute = CheckoutConfirmedRouteImport.update({
+  id: '/confirmed',
+  path: '/confirmed',
+  getParentRoute: () => CheckoutRoute,
+} as any)
 const ApiPublicWaitlistRoute = ApiPublicWaitlistRouteImport.update({
   id: '/api/public/waitlist',
   path: '/api/public/waitlist',
@@ -50,7 +56,8 @@ const ApiPublicWaitlistRoute = ApiPublicWaitlistRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
+  '/checkout/confirmed': typeof CheckoutConfirmedRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
@@ -58,7 +65,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
+  '/checkout/confirmed': typeof CheckoutConfirmedRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
@@ -67,7 +75,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
+  '/checkout/confirmed': typeof CheckoutConfirmedRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/checkout/confirmed'
     | '/shop/$slug'
     | '/shop/'
     | '/api/public/waitlist'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/checkout/confirmed'
     | '/shop/$slug'
     | '/shop'
     | '/api/public/waitlist'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/checkout/confirmed'
     | '/shop/$slug'
     | '/shop/'
     | '/api/public/waitlist'
@@ -102,7 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CartRoute: typeof CartRoute
-  CheckoutRoute: typeof CheckoutRoute
+  CheckoutRoute: typeof CheckoutRouteWithChildren
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
   ApiPublicWaitlistRoute: typeof ApiPublicWaitlistRoute
@@ -145,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/confirmed': {
+      id: '/checkout/confirmed'
+      path: '/confirmed'
+      fullPath: '/checkout/confirmed'
+      preLoaderRoute: typeof CheckoutConfirmedRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
     '/api/public/waitlist': {
       id: '/api/public/waitlist'
       path: '/api/public/waitlist'
@@ -155,10 +174,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CheckoutRouteChildren {
+  CheckoutConfirmedRoute: typeof CheckoutConfirmedRoute
+}
+
+const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutConfirmedRoute: CheckoutConfirmedRoute,
+}
+
+const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
+  CheckoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
-  CheckoutRoute: CheckoutRoute,
+  CheckoutRoute: CheckoutRouteWithChildren,
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
   ApiPublicWaitlistRoute: ApiPublicWaitlistRoute,

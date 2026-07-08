@@ -1,7 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useReveal } from "@/hooks/use-reveal";
 import { useCountUp } from "@/hooks/use-count-up";
+import { CartDrawer } from "@/components/cart-drawer";
+import { useCart, cartItemCount } from "@/lib/cart-store";
 import heroProduct from "@/assets/hero-product.jpg";
 import productFitted from "@/assets/product-fitted.jpg";
 import productPerformance from "@/assets/product-performance.jpg";
@@ -133,6 +135,14 @@ function SocialProof({ count = 127 }: { count?: number }) {
 }
 
 function Nav() {
+  const items = useCart((s) => s.items);
+  const openDrawer = useCart((s) => s.openDrawer);
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    useCart.persist.rehydrate();
+    setHydrated(true);
+  }, []);
+  const count = hydrated ? cartItemCount(items) : 0;
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/60 backdrop-blur-xl">
       <div className="mx-auto grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-6 py-4 sm:flex sm:max-w-7xl sm:justify-between">
@@ -140,16 +150,36 @@ function Nav() {
           ROO <span className="text-muted-foreground">ATHLETICS</span>
         </a>
         <nav className="hidden items-center gap-10 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground md:flex">
-          <a href="#coming-soon" className="transition-colors hover:text-foreground">Coming Soon</a>
+          <Link to="/shop" className="transition-colors hover:text-foreground">Shop</Link>
           <a href="#why" className="transition-colors hover:text-foreground">About</a>
           <a href="#waitlist" className="transition-colors hover:text-foreground">Waitlist</a>
         </nav>
-        <a
-          href="#waitlist"
-          className="btn-premium shrink-0 rounded-full bg-primary px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-foreground sm:px-5 sm:text-xs"
-        >
-          Join Waitlist
-        </a>
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={openDrawer}
+            aria-label={`Open cart (${count} items)`}
+            className="relative inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground transition-colors hover:border-foreground/40 sm:px-4 sm:text-xs"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+              <path d="M3 6h18" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            <span className="hidden sm:inline">Cart</span>
+            {count > 0 ? (
+              <span className="ml-0.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-foreground px-1.5 text-[10px] font-bold text-background">
+                {count}
+              </span>
+            ) : null}
+          </button>
+          <a
+            href="#waitlist"
+            className="btn-premium hidden rounded-full bg-primary px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-foreground sm:inline-flex sm:px-5 sm:text-xs"
+          >
+            Join Waitlist
+          </a>
+        </div>
       </div>
     </header>
   );
@@ -173,6 +203,7 @@ function Index() {
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
       <Nav />
+      <CartDrawer />
 
       {/* HERO */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-hero pt-28 pb-16">
