@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
+import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 import { Route as ApiPublicWaitlistRouteImport } from './routes/api/public/waitlist'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const ShopIndexRoute = ShopIndexRouteImport.update({
   path: '/shop/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopSlugRoute = ShopSlugRouteImport.update({
+  id: '/shop/$slug',
+  path: '/shop/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWaitlistRoute = ApiPublicWaitlistRouteImport.update({
   id: '/api/public/waitlist',
   path: '/api/public/waitlist',
@@ -31,30 +37,34 @@ const ApiPublicWaitlistRoute = ApiPublicWaitlistRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/shop/$slug': typeof ShopSlugRoute
   '/shop': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
   '/api/public/waitlist': typeof ApiPublicWaitlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/shop/' | '/api/public/waitlist'
+  fullPaths: '/' | '/shop/$slug' | '/shop/' | '/api/public/waitlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/shop' | '/api/public/waitlist'
-  id: '__root__' | '/' | '/shop/' | '/api/public/waitlist'
+  to: '/' | '/shop/$slug' | '/shop' | '/api/public/waitlist'
+  id: '__root__' | '/' | '/shop/$slug' | '/shop/' | '/api/public/waitlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
   ApiPublicWaitlistRoute: typeof ApiPublicWaitlistRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop/$slug': {
+      id: '/shop/$slug'
+      path: '/shop/$slug'
+      fullPath: '/shop/$slug'
+      preLoaderRoute: typeof ShopSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/waitlist': {
       id: '/api/public/waitlist'
       path: '/api/public/waitlist'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
   ApiPublicWaitlistRoute: ApiPublicWaitlistRoute,
 }

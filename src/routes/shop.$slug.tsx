@@ -129,7 +129,7 @@ function ProductDetail() {
             </div>
             {product.images.length > 1 ? (
               <div className="mt-4 grid grid-cols-4 gap-3">
-                {product.images.map((src, i) => (
+                {product.images.map((src: string, i: number) => (
                   <button
                     key={i}
                     type="button"
@@ -174,7 +174,7 @@ function ProductDetail() {
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((s) => (
+                {product.sizes.map((s: ProductSize) => (
                   <button
                     key={s}
                     type="button"
@@ -209,7 +209,7 @@ function ProductDetail() {
             <div className="mt-12 border-t border-border pt-8">
               <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">Details</p>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                {product.details.map((d) => (
+                {product.details.map((d: string) => (
                   <li key={d} className="flex gap-3">
                     <span className="mt-2 h-[3px] w-[3px] shrink-0 rounded-full bg-muted-foreground" />
                     <span>{d}</span>
