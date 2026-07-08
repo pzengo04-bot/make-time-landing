@@ -96,7 +96,8 @@ function ProductDetail() {
 
   useEffect(() => { useCart.persist.rehydrate(); }, []);
 
-  const activeColor = product.colors.find((c) => c.name === colorName) ?? product.colors[0];
+  const activeColor =
+    product.colors.find((c: ProductColor) => c.name === colorName) ?? product.colors[0];
 
   const onAdd = () => {
     if (!size) {
