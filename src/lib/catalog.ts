@@ -1,6 +1,8 @@
-import productPerformance from "@/assets/product-performance.jpg";
+import blackAsset from "@/assets/roo-performance-tee-black.png.asset.json";
+import navyAsset from "@/assets/roo-performance-tee-navy.png.asset.json";
 
 export type ProductSize = "XS" | "S" | "M" | "L" | "XL" | "XXL";
+export type ProductColor = { name: string; hex: string; image: string };
 
 export type Product = {
   id: string;
@@ -11,9 +13,8 @@ export type Product = {
   tagline: string;
   description: string;
   details: string[];
-  color: string;
+  colors: ProductColor[];
   sizes: ProductSize[];
-  images: string[];
 };
 
 export const products: Product[] = [
@@ -32,9 +33,11 @@ export const products: Product[] = [
       "Reinforced stitching at high-wear seams",
       "Pre-shrunk for a consistent fit wash after wash",
     ],
-    color: "Black",
+    colors: [
+      { name: "Black", hex: "#111111", image: blackAsset.url },
+      { name: "Navy", hex: "#1b2340", image: navyAsset.url },
+    ],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    images: [productPerformance, productPerformance, productPerformance],
   },
 ];
 
@@ -43,6 +46,9 @@ export const getProductBySlug = (slug: string) =>
 
 export const getProductById = (id: string) =>
   products.find((p) => p.id === id);
+
+export const getColor = (product: Product, name: string) =>
+  product.colors.find((c) => c.name === name) ?? product.colors[0];
 
 export const formatPrice = (product: Product) => {
   if (!product.price) return product.priceLabel ?? "—";
